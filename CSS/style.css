@@ -1,0 +1,266 @@
+body { 
+    font-family: 'Comfortaa', sans-serif; 
+    margin: 10px; 
+    line-height: 1.5; 
+    transition: background-color 0.3s, color 0.3s; }
+
+body.dark-theme { 
+    background-color: #333; 
+    color: #fff; }
+body.dark-theme .container, body.dark-theme #result, body.dark-theme #heaters-selection, body.dark-theme #email-section, body.dark-theme #calculation-summary { 
+    background-color: #444; 
+    border-color: #555; }
+body.dark-theme input, body.dark-theme select { 
+    background-color: #555; 
+    color: #fff; 
+    border-color: #666; }
+body.dark-theme button { 
+    background-color: #B05403; }
+
+button { 
+    padding: 12px 20px; 
+    background-color: #F09D03; 
+    color: white; border: none; 
+    border-radius: 10px; cursor: pointer; 
+    margin: 5px 0; 
+    font-family: 'Comfortaa', sans-serif; }
+input[type="number"], 
+select { width: 100%; 
+    padding: 10px; 
+    border: 1px solid #ddd; 
+    border-radius: 3px; 
+    box-sizing: border-box; 
+    font-size: 1em; 
+    font-family: 'Comfortaa', sans-serif; }
+
+.container { max-width: 95%; margin: 10px auto; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+.form-group, .form-group-inline { margin-bottom: 10px; }
+.form-group-inline { display: flex; align-items: center; }
+.form-group label, .form-group-inline label { display: block; margin-bottom: 3px; font-weight: bold; font-size: 0.9em; }
+.form-group-inline label { width: 250px; margin-right: 10px; text-align: left; }
+.summary-section { margin-bottom: 20px; }
+.summary-section h3 { font-size: 1.2em; margin-bottom: 10px; color: #333; }
+.company-details { font-size: 0.9em; color: #555; }
+.fade-in { animation: fadeIn 0.5s ease-in; }
+.form-group-inline input[type="number"], .form-group-inline select { flex-grow: 1; width: auto; padding: 8px; }
+.error-input { border: 2px solid red !important; }
+.error-message { color: red; font-size: 0.9em; margin-top: 3px; }
+.error-text { color: red; }
+.success-text { color: green; }
+.spaced-button { margin-right: 10px; }
+.form-group-inline button:last-child { margin-right: 0; }
+.heater-select { margin-bottom: 10px; padding: 10px; border: 1px solid #eee; background-color: #fff; }
+.remove-heater { background-color: #dc3545; padding: 5px 10px; }
+
+#input-data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 0.9em; }
+#input-data-grid p { margin: 0; }
+#heaters-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+#heaters-table th, #heaters-table td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 0.9em; }
+#heaters-table th { background-color: #f2f2f2; font-weight: bold; }
+#languageSelect { width: 120px; padding: 5px; font-size: 0.9em; margin-right: 15px; }
+#languageLabel { font-size: 0.9em; margin-right: 5px; }
+#calculation-summary { padding: 20px; background: #fff; border: 1px solid #ddd; border-radius: 5px; }
+#result, #heaters-selection, #email-section, #calculation-summary { margin-top: 15px; padding: 15px; border: 1px solid #eee; border-radius: 3px; background-color: #f9f9f9; display: none; }
+#result {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  #result-text {
+    flex: 3;
+    min-width: 320px;
+  }
+  #result-chart {
+    flex: 1;
+    min-width: 250px;
+    max-width: 30%;
+  }
+#result-chart { margin: 20px 0; max-width: 100%; }
+#heatLossChart {
+    width: 100% !important;
+    height: 300px !important;
+  }
+
+@media (max-width: 767.98px) {
+    #input-data-grid { grid-template-columns: 1fr; }
+    #heaters-table th, #heaters-table td { font-size: 0.8em; padding: 5px; }
+}
+@media (max-width: 767.98px) {
+    .container { max-width: 100%; padding: 10px; margin: 0; }
+    .form-group-inline { flex-direction: column; align-items: flex-start; }
+    .form-group-inline label { width: 100%; margin-bottom: 5px; }
+    .form-group-inline input[type="number"], .form-group-inline select { width: 100%; }
+    button { width: 100%; }
+}
+@media (min-width: 769px) {
+    #result-chart { display: block; }
+    #result { margin-top: 20px; }
+}
+@media (max-width: 768px) {
+        #calculateButton { order: 0; width: 100%; margin-bottom: 10px; }
+    #result {
+        flex-direction: column;
+      }
+      #result-chart {
+        max-width: 100%;
+        margin-top: 20px;
+      }
+    body { display: flex; flex-direction: column; }
+    #heatLossChart { height: 250px !important; }
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.summary-section,
+#result,
+#heaters-selection,
+#email-section,
+#calculation-summary {
+    display: none;
+}
+#calculation-summary.fade-in {
+    animation: fadeIn 0.7s ease-in-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.summary-section.active,
+#result.active,
+#heaters-selection.active,
+#email-section.active,
+#calculation-summary.active {
+    display: block;
+}
+.summary-columns {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+.summary-columns ul {
+    flex: 1 1 300px;
+    list-style: none;
+    padding-left: 0;
+}
+.summary-title {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+}
+.error-text {
+    color: red;
+    font-weight: bold;
+}
+#summary-heaters-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+#summary-heaters-table th,
+#summary-heaters-table td {
+    border: 1px solid #999;
+    padding: 6px 8px;
+    text-align: center;
+}
+#summary-heaters-table {
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 5px rgba(0,0,0,0.05);
+}
+#summary-heaters-table th {
+    white-space: normal;
+    text-align: center;
+    word-break: break-word;
+    font-weight: 600;
+    font-size: 14px;
+    max-width: 120px; /* обмеження ширини */
+}
+.success-text {
+    color: green;
+    font-weight: bold;
+}
+body.dark-theme .heater-select {
+    background-color: #444;
+    border-color: #666;
+    color: #fff;
+}
+
+body.dark-theme .heater-select select,
+body.dark-theme .heater-select input[type="number"] {
+    background-color: #555;
+    color: #fff;
+    border-color: #777;
+}
+
+body.dark-theme .heater-select button {
+    background-color: #B05403;
+    color: white;
+}
+.dark-theme #calculation-summary h3 {
+    color: #fff;
+}
+h3, h2, .summary-title {
+    transition: color 0.3s ease-in-out;
+}
+@media (max-width: 768px) {
+    #summary-heaters-table,
+    #summary-heaters-table thead,
+    #summary-heaters-table tbody,
+    #summary-heaters-table th,
+    #summary-heaters-table td,
+    #summary-heaters-table tr {
+        display: block;
+    }
+
+    #summary-heaters-table thead tr {
+        display: none;
+    }
+
+    #summary-heaters-table td {
+        position: relative;
+        padding-left: 50%;
+        text-align: left;
+        border: 1px solid #999;
+    }
+
+    #summary-heaters-table td::before {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 45%;
+        white-space: normal;
+        font-weight: bold;
+        content: attr(data-label);
+    }
+
+    #summary-heaters-table tr {
+        margin-bottom: 10px;
+        border-bottom: 2px solid #ccc;
+    }
+}
+@media (min-width: 992px) {
+    #result {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    #result-text {
+        flex: 3;
+        margin-right: 20px;
+    }
+
+    #result-chart {
+        flex: 1;
+        max-width: 30%;
+    }
+}
+/* Для темної теми */
+body.dark-theme #summary-heater-power-message {
+    color: rgb(224, 99, 99);
+    transition: color 0.3s ease-out; /* Плавне світлішання */
+}
+
+/* Після перевірки потужності */
+body.dark-theme .success-text {
+    color: #4caf50; /* Світліший зелений для успіху */
+}

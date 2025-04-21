@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-uk="Розрахунок тепловтрат" data-lang-en="Heat Loss Calculation">Розрахунок тепловтрат</title>
+    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/vfs_fonts.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 data-lang-uk="Калькулятор тепловтрат приміщення" data-lang-en="Room Heat Loss Calculator">Калькулятор тепловтрат приміщення</h1>
+        <p data-lang-uk="Будь ласка, введіть параметри приміщення для розрахунку тепловтрат." data-lang-en="Please enter the room parameters to calculate heat loss.">Будь ласка, введіть параметри приміщення для розрахунку тепловтрат.</p>
+        <div class="form-group-inline">
+            <label for="languageSelect" id="languageLabel" data-lang-uk="Оберіть мову:" data-lang-en="Select language:">Оберіть мову:</label>
+            <select id="languageSelect" onchange="changeLanguage()">
+                <option value="uk" data-lang-uk="Українська" data-lang-en="Ukrainian">Українська</option>
+                <option value="en" data-lang-uk="Англійська" data-lang-en="English">Англійська</option>
+            </select>
+            <button class="spaced-button" onclick="toggleTheme()" data-lang-uk="Перемкнути тему" data-lang-en="Toggle theme">Перемкнути тему</button>
+            <button class="spaced-button" onclick="saveFormData()" data-lang-uk="Зберегти дані" data-lang-en="Save data">Зберегти дані</button>
+            <button class="spaced-button" onclick="resetForm()" data-lang-uk="Скинути все" data-lang-en="Reset all">Скинути все</button>
+            <button class="spaced-button" onclick="fillTypicalValues()" data-lang-uk="Типові значення" data-lang-en="Typical values">Типові значення</button>
+        </div>
+        <fieldset>
+            <legend data-lang-uk="1. Загальна інформація" data-lang-en="1. General Information">1. Загальна інформація</legend>
+            <div class="form-group-inline">
+                <label for="buildingType" data-lang-uk="Тип будівлі:" data-lang-en="Building type:">Тип будівлі:</label>
+                <select id="buildingType">
+                    <option value="newApartment" data-lang-uk="Новий багатоквартирний дім" data-lang-en="New apartment building">Новий багатоквартирний дім</option>
+                    <option value="oldApartment" data-lang-uk="Старий багатоквартирний дім" data-lang-en="Old apartment building">Старий багатоквартирний дім</option>
+                    <option value="detachedHouseNew" data-lang-uk="Окремий будинок (новий)" data-lang-en="Detached house (new)">Окремий будинок (новий)</option>
+                    <option value="detachedHouseOld" data-lang-uk="Окремий будинок (старий)" data-lang-en="Detached house (old)">Окремий будинок (старий)</option>
+                    <option value="townhouseDuplex" data-lang-uk="Частина приватного будинку" data-lang-en="Townhouse/Duplex">Частина приватного будинку</option>
+                    <option value="commercialSpace" data-lang-uk="Комерційне приміщення" data-lang-en="Commercial space">Комерційне приміщення</option>
+                </select>
+            </div>
+            <div class="form-group-inline">
+                <label for="ceilingHeight" data-lang-uk="Висота стелі (м):" data-lang-en="Ceiling height (m):">Висота стелі (м):</label>
+                <input type="number" id="ceilingHeight"
+                     placeholder="Наприклад, 2.7"
+                        data-placeholder-uk="Наприклад, 2.7"
+                        data-placeholder-en="e.g., 2.7"
+                        data-title-uk="Введіть висоту стелі в метрах (типове значення: 2.5-3 м)."
+                        data-title-en="Enter ceiling height in meters (typical: 2.5–3 m)."
+                        title="Введіть висоту стелі в метрах (типове значення: 2.5-3 м).">
+            </div>
+            <div class="form-group-inline">
+                <label for="outsideTemp" data-lang-uk="Зовнішня температура (°C):" data-lang-en="Outside temperature (°C):">Зовнішня температура (°C):</label>
+                <input type="number" id="outsideTemp"
+                       placeholder="Наприклад, -15"
+                       data-placeholder-uk="Наприклад, -15"
+                       data-placeholder-en="e.g., -15"
+                       data-title-uk="Введіть середню зимову температуру (наприклад, -15°C для холодного клімату)."
+                       data-title-en="Enter the average winter temperature (e.g., -15°C for a cold climate)."
+                       title="Введіть середню зимову температуру (наприклад, -15°C для холодного клімату).">
+
+            </div>
+            <div class="form-group-inline">
+                <label for="insideTemp" data-lang-uk="Внутрішня температура (°C):" data-lang-en="Inside temperature (°C):">Внутрішня температура (°C):</label>
+                <input type="number" id="insideTemp"
+                        placeholder="Наприклад, 20"
+                        data-placeholder-uk="Наприклад, 20"
+                        data-placeholder-en="e.g., 20"
+                        data-title-uk="Введіть бажану температуру в приміщенні (типово: 18-22°C)."
+                        data-title-en="Enter desired indoor temperature (typical: 18–22°C)."
+                        title="Введіть бажану температуру в приміщенні (типово: 18-22°C).">
+
+            </div>
+            <div class="form-group-inline">
+                <label for="roomArea" data-lang-uk="Площа приміщення (м²):" data-lang-en="Room area (m²):">Площа приміщення (м²):</label>
+                <input type="number" id="roomArea"
+                        placeholder="Наприклад, 50"
+                        data-placeholder-uk="Наприклад, 50"
+                        data-placeholder-en="e.g., 50"
+                        data-title-uk="Введіть загальну площу приміщення в м²."
+                        data-title-en="Enter the total area of the room in m²."
+                        title="Введіть загальну площу приміщення в м².">
+
+            </div>
+            <div class="form-group-inline">
+                <label for="insulationType"
+                    data-lang-uk="Тип утеплення"
+                    data-lang-en="Insulation type">Тип утеплення</label>
+                <select id="insulationType">
+                    <option value="none" data-lang-uk="Без утеплення" data-lang-en="No insulation">Без утеплення</option>
+                    <option value="mineralwool" data-lang-uk="Мінеральна вата" data-lang-en="Mineral wool">Мінеральна вата</option>
+                    <option value="foam" data-lang-uk="Пінопласт" data-lang-en="Polystyrene">Пінопласт</option>
+                    <option value="foamglass" data-lang-uk="Піноскло" data-lang-en="Foam glass">Піноскло</option>
+                </select>                
+            </div>
+
+            <div class="form-group-inline">
+                <label for="upperRoom" data-lang-uk="Приміщення зверху" data-lang-en="Upper room">Приміщення зверху</label>
+                <select id="upperRoom">
+                    <option value="none" data-lang-uk="Немає" data-lang-en="None">Немає</option>
+                    <option value="unheated" data-lang-uk="Неопалювальне" data-lang-en="Unheated">Неопалювальне</option>
+                    <option value="heated" data-lang-uk="Опалювальне" data-lang-en="Heated">Опалювальне</option>
+                </select>
+            </div>
+
+            <div class="form-group-inline">
+                <label for="lowerRoom" data-lang-uk="Приміщення знизу" data-lang-en="Lower room">Приміщення знизу</label>
+                    <select id="lowerRoom">
+                        <option value="none" data-lang-uk="Немає" data-lang-en="None">Немає</option>
+                        <option value="unheated" data-lang-uk="Неопалювальне" data-lang-en="Unheated">Неопалювальне</option>
+                        <option value="heated" data-lang-uk="Опалювальне" data-lang-en="Heated">Опалювальне</option>
+                    </select>
+                </div>                
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend data-lang-uk="2. Додаткова інформація" data-lang-en="2. Additional Information">2. Додаткова інформація</legend>
+            <div>
+                <h3 data-lang-uk="Стіни" data-lang-en="Walls">Стіни</h3>
+                <div class="form-group-inline">
+                    <label for="externalWallsCount" data-lang-uk="Кількість зовнішніх стін:" data-lang-en="Number of external walls:">Кількість зовнішніх стін:</label>
+                    <input type="number" id="externalWallsCount"
+                        value="1" min="1" onchange="toggleAdjacentRoomType()"
+                        data-title-uk="Вкажіть кількість зовнішніх стін (1-4)."
+                        data-title-en="Enter the number of external walls (1–4)."
+                        title="Вкажіть кількість зовнішніх стін (1-4).">
+                </div>
+                <div class="form-group-inline">
+                    <label for="wallMaterial" data-lang-uk="Матеріал зовнішніх стін:" data-lang-en="External wall material:">Матеріал зовнішніх стін:</label>
+                    <select id="wallMaterial">
+                        <option value="brick" data-lang-uk="Цегла (0.8 Вт/м²·К)" data-lang-en="Brick (0.8 W/m²·K)">Цегла (0.8 Вт/м²·К)</option>
+                        <option value="concrete" data-lang-uk="Бетон (1.4 Вт/м²·К)" data-lang-en="Concrete (1.4 W/m²·K)">Бетон (1.4 Вт/м²·К)</option>
+                        <option value="wood" data-lang-uk="Дерево (0.15 Вт/м²·К)" data-lang-en="Wood (0.15 W/m²·K)">Дерево (0.15 Вт/м²·К)</option>
+                        <option value="insulatedBrick" data-lang-uk="Утеплена цегла (0.3 Вт/м²·К)" data-lang-en="Insulated brick (0.3 W/m²·K)">Утеплена цегла (0.3 Вт/м²·К)</option>
+                    </select>
+                </div>
+                <div class="form-group-inline">
+                    <label for="wallThickness" data-lang-uk="Товщина зовнішніх стін (м):" data-lang-en="External wall thickness (m):">Товщина зовнішніх стін (м):</label>
+                    <input type="number" id="wallThickness"
+                        placeholder="Наприклад, 0.2"
+                        data-placeholder-uk="Наприклад, 0.2"
+                        data-placeholder-en="e.g., 0.2"
+                        data-title-uk="Типова товщина: 0.2-0.5 м."
+                        data-title-en="Typical thickness: 0.2–0.5 m."
+                        title="Типова товщина: 0.2-0.5 м.">
+                </div>
+                <div id="adjacentRoomTypeDiv" class="form-group-inline" style="display:none;">
+                    <label for="adjacentRoomType" data-lang-uk="Сусідні приміщення:" data-lang-en="Adjacent rooms:">Сусідні приміщення:</label>
+                    <select id="adjacentRoomType">
+                        <option value="heated" data-lang-uk="Опалювані" data-lang-en="Heated">Опалювані</option>
+                        <option value="unheated" data-lang-uk="Неопалювані" data-lang-en="Unheated">Неопалювані</option>
+                    </select>
+                </div>
+                <div class="form-group-inline">
+                    <label for="wallArea" data-lang-uk="Загальна площа зовнішніх стін (м²):" data-lang-en="Total external wall area (m²):">Загальна площа зовнішніх стін (м²):</label>
+                    <input type="number" id="wallArea"
+                    placeholder="Наприклад, 50"
+                    data-placeholder-uk="Наприклад, 50"
+                    data-placeholder-en="e.g., 50"
+                    data-title-uk="Введіть загальну площу всіх зовнішніх стін."
+                    data-title-en="Enter the total area of all external walls."
+                    title="Введіть загальну площу всіх зовнішніх стін.">
+                </div>
+            </div>
+            <div>
+                <h3 data-lang-uk="Вікна" data-lang-en="Windows">Вікна</h3>
+                <div class="form-group-inline">
+                    <label for="windowCount" data-lang-uk="Кількість вікон:" data-lang-en="Number of windows:">Кількість вікон:</label>
+                    <input type="number" id="windowCount"
+                    value="1" min="1"
+                    data-title-uk="Вкажіть кількість вікон."
+                    data-title-en="Enter the number of windows."
+                    title="Вкажіть кількість вікон.">
+                </div>
+                <div class="form-group-inline">
+                    <label for="windowArea" data-lang-uk="Площа одного вікна (м²):" data-lang-en="Single window area (m²):">Площа одного вікна (м²):</label>
+                    <input type="number" id="windowArea"
+                        placeholder="Наприклад, 1.5"
+                        data-placeholder-uk="Наприклад, 1.5"
+                        data-placeholder-en="e.g., 1.5"
+                        data-title-uk="Типова площа: 1-2 м²."
+                        data-title-en="Typical area: 1–2 m²."
+                        title="Типова площа: 1-2 м².">
+                </div>
+                <div class="form-group-inline">
+                    <label for="windowType" data-lang-uk="Тип вікон:" data-lang-en="Window type:">Тип вікон:</label>
+                    <select id="windowType">
+                        <option value="singlePane" data-lang-uk="Однокамерні (5.7 Вт/м²·К)" data-lang-en="Single pane (5.7 W/m²·K)">Однокамерні (5.7 Вт/м²·К)</option>
+                        <option value="doublePane" data-lang-uk="Двокамерні (2.8 Вт/м²·К)" data-lang-en="Double pane (2.8 W/m²·K)">Двокамерні (2.8 Вт/м²·К)</option>
+                        <option value="triplePane" data-lang-uk="Трикамерні (1.8 Вт/м²·К)" data-lang-en="Triple pane (1.8 W/m²·K)">Трикамерні (1.8 Вт/м²·К)</option>
+                        <option value="energyEfficient" data-lang-uk="Енергоефективні (1.1 Вт/м²·К)" data-lang-en="Energy-efficient (1.1 W/m²·K)">Енергоефективні (1.1 Вт/м²·К)</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <h3 data-lang-uk="Двері" data-lang-en="Doors">Двері</h3>
+                <div class="form-group-inline">
+                    <label for="doorCount" data-lang-uk="Кількість зовнішніх/вхідних дверей:" data-lang-en="Number of external/entrance doors:">Кількість зовнішніх/вхідних дверей:</label>
+                    <input type="number" id="doorCount"
+                    value="1" min="0"
+                    data-title-uk="Вкажіть кількість зовнішніх дверей (0, якщо немає)."
+                    data-title-en="Enter the number of exterior doors (0 if none)."
+                    title="Вкажіть кількість зовнішніх дверей (0, якщо немає).">
+                </div>
+                <div id="doorAreaContainer" class="form-group-inline">
+                    <label for="doorArea" data-lang-uk="Площа одних дверей (м²):" data-lang-en="Single door area (m²):">Площа одних дверей (м²):</label>
+                    <input type="number" id="doorArea"
+                    placeholder="Наприклад, 2"
+                    data-placeholder-uk="Наприклад, 2"
+                    data-placeholder-en="e.g., 2"
+                    data-title-uk="Типова площа: 1.5-2 м²."
+                    data-title-en="Typical area: 1.5–2 m²."
+                    title="Типова площа: 1.5-2 м².">
+                </div>
+                <div id="doorMaterialContainer" class="form-group-inline">
+                    <label for="doorMaterial" data-lang-uk="Матеріал дверей:" data-lang-en="Door material:">Матеріал дверей:</label>
+                    <select id="doorMaterial">
+                        <option value="wood" data-lang-uk="Дерево (2.3 Вт/м²·К)" data-lang-en="Wood (2.3 W/m²·K)">Дерево (2.3 Вт/м²·К)</option>
+                        <option value="metal" data-lang-uk="Метал (5.0 Вт/м²·К)" data-lang-en="Metal (5.0 W/m²·K)">Метал (5.0 Вт/м²·К)</option>
+                        <option value="insulated" data-lang-uk="Утеплені (1.5 Вт/м²·К)" data-lang-en="Insulated (1.5 W/m²·K)">Утеплені (1.5 Вт/м²·К)</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <h3 data-lang-uk="Стеля" data-lang-en="Ceiling">Стеля</h3>
+                <div class="form-group-inline">
+                    <label for="ceilingMaterial" data-lang-uk="Матеріал стелі/даху:" data-lang-en="Ceiling/roof material:">Матеріал стелі/даху:</label>
+                    <select id="ceilingMaterial">
+                        <option value="concrete" data-lang-uk="Бетон (1.4 Вт/м²·К)" data-lang-en="Concrete (1.4 W/m²·K)">Бетон (1.4 Вт/м²·К)</option>
+                        <option value="insulated" data-lang-uk="Утеплений (0.04 Вт/м²·К)" data-lang-en="Insulated (0.04 W/m²·K)">Утеплений (0.04 Вт/м²·К)</option>
+                    </select>
+                </div>
+                <div class="form-group-inline">
+                    <label for="ceilingThickness" data-lang-uk="Товщина стелі/даху (м):" data-lang-en="Ceiling/roof thickness (m):">Товщина стелі/даху (м):</label>
+                    <input type="number" id="ceilingThickness"
+                            placeholder="Наприклад, 0.15"
+                            data-placeholder-uk="Наприклад, 0.15"
+                            data-placeholder-en="e.g., 0.15"
+                            data-title-uk="Типова товщина: 0.1-0.3 м."
+                            data-title-en="Typical thickness: 0.1–0.3 m."
+                            title="Типова товщина: 0.1-0.3 м.">
+                </div>
+            </div>
+            <div>
+                <h3 data-lang-uk="Підлога" data-lang-en="Floor">Підлога</h3>
+                <div class="form-group-inline">
+                    <label for="floorType" data-lang-uk="Тип підлоги:" data-lang-en="Floor type:">Тип підлоги:</label>
+                    <select id="floorType">
+                        <option value="concreteOnGround" data-lang-uk="Бетон по грунту (0.8 Вт/м²·К)" data-lang-en="Concrete on ground (0.8 W/m²·K)">Бетон по грунту (0.8 Вт/м²·К)</option>
+                        <option value="concreteAboveGround" data-lang-uk="Бетон над землею (1.5 Вт/м²·К)" data-lang-en="Concrete above ground (1.5 W/m²·K)">Бетон над землею (1.5 Вт/м²·К)</option>
+                        <option value="woodOnJoists" data-lang-uk="Дерев'яна по лагах (0.5 Вт/м²·К)" data-lang-en="Wood on joists (0.5 W/m²·K)">Дерев'яна по лагах (0.5 Вт/м²·К)</option>
+                        <option value="insulated" data-lang-uk="Утеплена (0.3 Вт/м²·К)" data-lang-en="Insulated (0.3 W/m²·K)">Утеплена (0.3 Вт/м²·К)</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <h3 data-lang-uk="Вентиляція" data-lang-en="Ventilation">Вентиляція</h3>
+                <div class="form-group-inline">
+                    <label for="ventilationType" data-lang-uk="Тип вентиляції:" data-lang-en="Ventilation type:">Тип вентиляції:</label>
+                    <select id="ventilationType">
+                        <option value="natural" data-lang-uk="Природна (0.3 об/год)" data-lang-en="Natural (0.3 ACH)">Природна (0.3 об/год)</option>
+                        <option value="forced" data-lang-uk="Примусова (0.8 об/год)" data-lang-en="Forced (0.8 ACH)">Примусова (0.8 об/год)</option>
+                    </select>
+                </div>
+            </div>
+        </fieldset>
+        <button id="calculateHeatLoss" onclick="calculateHeatLoss()" data-lang-uk="Розрахувати тепловтрати" data-lang-en="Calculate heat loss">
+            Розрахувати тепловтрати
+          </button>
+          
+          <div id="result" style="display: none;">
+            <div id="result-text">
+                <h3 data-lang-uk="Результати розрахунку" data-lang-en="Calculation Results">Результати розрахунку</h3>
+        
+                <p>
+                    <b><span class="label" data-lang-uk="Тепловтрати через конструкції:" data-lang-en="Heat loss through structures:">Тепловтрати через конструкції:</span></b>
+                    <span id="totalStructuralHeatLoss"></span>
+                </p>
+        
+                <p>
+                    <b><span class="label" data-lang-uk="Тепловтрати на вентиляцію:" data-lang-en="Ventilation heat loss:">Тепловтрати на вентиляцію:</span></b>
+                    <span id="ventilationHeatLossValue"></span>
+                </p>
+        
+                <p>
+                    <b><span class="label" data-lang-uk="Загальні тепловтрати з вентиляцією:" data-lang-en="Total heat loss with ventilation:">Загальні тепловтрати з вентиляцією:</span></b>
+                    <span id="totalWithVentilationHeatLossValue"></span>
+                </p>
+        
+                <p>
+                    <b>
+                        <span class="label"
+                              data-lang-uk="Рекомендована загальна потужність обігрівачів:"
+                              data-lang-en="Recommended total heater power:">
+                          Рекомендована загальна потужність обігрівачів:
+                        </span>
+                      </b>
+                      <span id="recommendedHeaterPowerValue"></span>
+                </p>
+            </div>
+        
+            <div id="result-chart">
+                <canvas id="heatLossChart"></canvas>
+            </div>
+        </div>        
+        <div id="heaters-selection" style="display: none;">
+            <h3 data-lang-uk="3. Вибір обігрівачів" data-lang-en="3. Heater Selection">3. Вибір обігрівачів</h3>
+            <p data-lang-uk="Оберіть обігрівачі зі списку для вашого приміщення." data-lang-en="Select heaters from the list for your room.">Оберіть обігрівачі зі списку для вашого приміщення.</p>
+            <button onclick="addCustomHeater()" data-lang-uk="Додати власний обігрівач" data-lang-en="Add custom heater">Додати власний обігрівач</button>
+            <button onclick="autoSelectHeaters()" data-lang-uk="Автоматичний підбір" data-lang-en="Auto-select heaters">Автоматичний підбір</button>
+            <div id="heaters-container"></div>
+            <button onclick="checkHeaterPower()" data-lang-uk="Перевірити потужність обігрівачів" data-lang-en="Check heater power">Перевірити потужність обігрівачів</button>
+            <div id="heaterCheckResult"></div>
+            <div class="form-group">
+                <div class="form-group">
+                    <label for="electricityCost" data-lang-uk="Вартість електроенергії (UAH/kWh)" data-lang-en="Electricity cost (EUR/kWh)">Вартість електроенергії (UAH/kWh)</label>
+                    <input type="number" id="electricityCost" step="0.01" value="2.5" min="0">
+                </div>
+                <p><span class="label" data-lang-uk="Приблизна вартість опалення за годину:" data-lang-en="Estimated hourly heating cost:">Приблизна вартість опалення за годину:</span> <span id="heatingCostHourly"></span> <span class="currency-unit" data-lang-uk="грн" data-lang-en="eur">грн</span></p>
+                <p><span class="label" data-lang-uk="Приблизна вартість опалення за добу:" data-lang-en="Estimated daily heating cost:">Приблизна вартість опалення за добу:</span> <span id="heatingCostDaily"></span> <span class="currency-unit" data-lang-uk="грн" data-lang-en="eur">грн</span></p>
+                <p><span class="label" data-lang-uk="Приблизна вартість опалення за місяць:" data-lang-en="Estimated monthly heating cost:">Приблизна вартість опалення за місяць:</span> <span id="heatingCostMonthly"></span> <span class="currency-unit" data-lang-uk="грн" data-lang-en="eur">грн</span></p>
+                <p><span class="label" data-lang-uk="Приблизна вартість опалення за сезон (5 місяців):" data-lang-en="Estimated seasonal heating cost (5 months):">Приблизна вартість опалення за сезон (5 місяців):</span> <span id="heatingCostSeasonal"></span> <span class="currency-unit" data-lang-uk="грн" data-lang-en="eur">грн</span></p>
+            </div>
+        </div>
+        <div id="email-section" style="display: none;">
+            <h3 data-lang-uk="Надіслати розрахунок на email" data-lang-en="Send Calculation to Email">Надіслати розрахунок на email</h3>
+            <label for="email" data-lang-uk="Ваш email:" data-lang-en="Your email:">Ваш email:</label>
+            <input type="email" id="email" placeholder="Введіть ваш email">
+            <button id="showSummaryButton" onclick="showCalculationSummary()"
+                 data-lang-uk="Показати підсумок розрахунку"
+                 data-lang-en="Show calculation summary">
+                 Показати підсумок розрахунку
+            </button>
+            <button onclick="downloadPDF()" data-lang-uk="Завантажити PDF" data-lang-en="Download PDF">Завантажити PDF</button>
+            <button id="sendEmailButton" onclick="sendCalculationEmail()" data-lang-uk="Відправити" data-lang-en="Send">Відправити</button>
+        </div>
+        <div id="calculation-summary" class="summary-section">
+            <h3 class="summary-title"
+            data-lang-uk="Підсумок розрахунку"
+            data-lang-en="Calculation Summary">
+            Підсумок розрахунку
+            </h3>
+
+            <p><strong>Дата та час розрахунку:</strong> <span id="summary-datetime"></span></p>
+        
+            <div class="summary-columns">
+                <ul>
+                    <li><strong data-lang-uk="Тип будівлі:" data-lang-en="Building type:">Тип будівлі:</strong> <span id="summary-buildingType"></span></li>
+                    <li><strong data-lang-uk="Висота стелі (м):" data-lang-en="Ceiling height (m):">Висота стелі (м):</strong> <span id="summary-ceilingHeight"></span></li>
+                    <li><strong data-lang-uk="Зовнішня температура (°C):" data-lang-en="Outside temperature (°C):">Зовнішня температура (°C):</strong> <span id="summary-outsideTemp"></span></li>
+                    <li><strong data-lang-uk="Внутрішня температура (°C):" data-lang-en="Inside temperature (°C):">Внутрішня температура (°C):</strong> <span id="summary-insideTemp"></span></li>
+                    <li><strong data-lang-uk="Площа приміщення (м²):" data-lang-en="Room area (m²):">Площа приміщення (м²):</strong> <span id="summary-roomArea"></span></li>
+                    <li><strong data-lang-uk="Кількість зовнішніх стін:" data-lang-en="Number of external walls:">Кількість зовнішніх стін:</strong> <span id="summary-externalWallsCount"></span></li>
+                    <li><strong data-lang-uk="Матеріал стін:" data-lang-en="Wall material:">Матеріал стін:</strong> <span id="summary-wallMaterial"></span></li>
+                    <li><strong data-lang-uk="Товщина стін (м):" data-lang-en="Wall thickness (m):">Товщина стін (м):</strong> <span id="summary-wallThickness"></span></li>
+                    <li id="summary-adjacentRoomType-row">
+                        <strong data-lang-uk="Сусіднє приміщення:" data-lang-en="Adjacent room:">Сусіднє приміщення:</strong>
+                        <span id="summary-adjacentRoomType"></span>
+                    </li>
+                </ul>
+            
+                <ul>
+                    <li><strong data-lang-uk="Площа стін (м²):" data-lang-en="Wall area (m²):">Площа стін (м²):</strong> <span id="summary-wallArea"></span></li>
+                    <li><strong data-lang-uk="Кількість вікон:" data-lang-en="Number of windows:">Кількість вікон:</strong> <span id="summary-windowCount"></span></li>
+                    <li><strong data-lang-uk="Площа одного вікна (м²):" data-lang-en="Single window area (m²):">Площа одного вікна (м²):</strong> <span id="summary-windowSingleArea"></span></li>
+                    <li><strong data-lang-uk="Тип вікон:" data-lang-en="Window type:">Тип вікон:</strong> <span id="summary-windowType"></span></li>
+                    <li><strong data-lang-uk="Кількість дверей:" data-lang-en="Number of doors:">Кількість дверей:</strong> <span id="summary-doorCount"></span></li>
+                    <li><strong data-lang-uk="Площа одних дверей (м²):" data-lang-en="Single door area (m²):">Площа одних дверей (м²):</strong> <span id="summary-doorSingleArea"></span></li>
+                    <li><strong data-lang-uk="Матеріал дверей:" data-lang-en="Door material:">Матеріал дверей:</strong> <span id="summary-doorMaterial"></span></li>
+                    <li><strong data-lang-uk="Матеріал стелі:" data-lang-en="Ceiling material:">Матеріал стелі:</strong> <span id="summary-ceilingMaterial"></span></li>
+                    <li><strong data-lang-uk="Товщина стелі (м):" data-lang-en="Ceiling thickness (m):">Товщина стелі (м):</strong> <span id="summary-ceilingThickness"></span></li>
+                    <li><strong data-lang-uk="Тип підлоги:" data-lang-en="Floor type:">Тип підлоги:</strong> <span id="summary-floorType"></span></li>
+                    <li><strong data-lang-uk="Тип вентиляції:" data-lang-en="Ventilation type:">Тип вентиляції:</strong> <span id="summary-ventilationType"></span></li>
+                </ul>
+            </div>            
+        
+            <h4 data-lang-uk="Тепловтрати" data-lang-en="Heat Losses">Тепловтрати</h4>
+<ul>
+    <li><strong data-lang-uk="Через конструкції:" data-lang-en="Through structures:">Через конструкції:</strong>
+        <span id="summary-totalStructuralHeatLoss"></span>
+    </li>
+    <li><strong data-lang-uk="Через вентиляцію:" data-lang-en="Through ventilation:">Через вентиляцію:</strong>
+        <span id="summary-ventilationHeatLossValue"></span>
+    </li>
+    <li><strong data-lang-uk="Загальні тепловтрати:" data-lang-en="Total heat loss:">Загальні тепловтрати:</strong>
+        <span id="summary-totalWithVentilationHeatLossValue"></span>
+    </li>
+    <li><strong data-lang-uk="Рекомендована потужність обігрівачів:" data-lang-en="Recommended heater power:">Рекомендована потужність обігрівачів:</strong>
+        <span id="summary-recommendedHeaterPowerValue"></span>
+    </li>
+</ul>
+
+<h4 data-lang-uk="Обрані обігрівачі" data-lang-en="Selected heaters">Обрані обігрівачі</h4>
+<p id="no-heaters-message" class="error-text" style="display: none;"
+   data-lang-uk="Ви не обрали обігрівачі"
+   data-lang-en="You have not selected any heaters">
+   Ви не обрали обігрівачі
+</p>
+
+<table id="summary-heaters-table">
+    <thead>
+        <tr>
+            <th data-lang-uk="Модель" data-lang-en="Model">Модель</th>
+            <th data-lang-uk="К-сть" data-lang-en="Qty">К-сть</th>
+            <th data-lang-uk="Потужність (Вт)" data-lang-en="Power (W)">Потужність (Вт)</th>
+            <th data-lang-uk="Потужність (кВт)" data-lang-en="Power (kW)">Потужність (кВт)</th>
+            <th data-lang-uk="Ціна (за 1)" data-lang-en="Price (each)">Ціна (за 1)</th>
+            <th data-lang-uk="Загальна ціна" data-lang-en="Total price">Загальна ціна</th>
+        </tr>
+    </thead>
+                <tbody id="summary-heaters-list"></tbody>
+            </table>
+            <p id="summary-heater-power-message" class="error-text">Загальна потужність обігрівачів</p>
+        
+            <h4 data-lang-uk="Вартість опалення" data-lang-en="Heating cost">Вартість опалення</h4>
+
+<p id="summary-electricity-warning" class="error-text" style="display: none;"
+   data-lang-uk="Введіть вартість кВт⋅год"
+   data-lang-en="Enter electricity price per kWh">
+   Введіть вартість кВт⋅год
+</p>
+
+<ul>
+    <li>
+        <strong data-lang-uk="Ціна за кВт⋅год:" data-lang-en="Price per kWh:">Ціна за кВт⋅год:</strong>
+        <span id="summary-electricityCost"></span>
+    </li>
+    <li>
+        <strong data-lang-uk="За годину:" data-lang-en="Per hour:">За годину:</strong>
+        <span id="summary-heatingCostHourly"></span>
+    </li>
+    <li>
+        <strong data-lang-uk="За добу:" data-lang-en="Per day:">За добу:</strong>
+        <span id="summary-heatingCostDaily"></span>
+    </li>
+    <li>
+        <strong data-lang-uk="За місяць:" data-lang-en="Per month:">За місяць:</strong>
+        <span id="summary-heatingCostMonthly"></span>
+    </li>
+    <li>
+        <strong data-lang-uk="За сезон:" data-lang-en="Per season:">За сезон:</strong>
+        <span id="summary-heatingCostSeasonal"></span>
+    </li>
+</ul>
+        </div>
+            <hr>
+            <div class="company-details">
+                <h3 data-lang-uk="Наші реквізити:" data-lang-en="Our Details:">Наші реквізити:</h3>
+                <p><b><span class="label" data-lang-uk="Назва компанії:" data-lang-en="Company name:">Назва компанії:</span></b> Тепла компанія</p>
+                <p><b><span class="label" data-lang-uk="Контактний номер:" data-lang-en="Contact number:">Контактний номер:</span></b> +38 (099)470-53-45 </p>
+                <p><b><span class="label" data-lang-uk="Email:" data-lang-en="Email:">Email:</span></b> info@warmcompany.eu</p>
+                <p><b><span class="label" data-lang-uk="Вебсайт:" data-lang-en="Website:">Вебсайт:</b> warmcompany.eu</p>
+            </div>
+        </div>
+    </div>
+    <script src="function/function.js"></script>
+    <script src="function/downPDF.js"></script>
+    <script src="function/sendemail.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFormData();
+            toggleDoorFieldsVisibility();
+            toggleAdjacentRoomType();
+            populateHeaterSeries();
+            changeLanguage(); // ✅ викликаємо одразу після завантаження
+            document.getElementById('doorCount').addEventListener('change', toggleDoorFieldsVisibility);
+        });
+    </script>    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          changeLanguage(); // ✅ правильна функція
+        });
+      </script>
+</body>
+</html>
