@@ -475,7 +475,7 @@
       <script>
   document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
-    const lang = params.get("lang");
+    const lang = params.get("lang") || "uk";
     const select = document.getElementById("languageSelect");
     if (lang && select) {
       select.value = lang;
