@@ -472,5 +472,16 @@
           changeLanguage(); // ✅ правильна функція
         });
       </script>
+      <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const lang = params.get("lang");
+    const select = document.getElementById("languageSelect");
+    if (lang && select) {
+      select.value = lang;
+      if (typeof changeLanguage === 'function') changeLanguage();
+    }
+  });
+</script>
 </body>
 </html>
