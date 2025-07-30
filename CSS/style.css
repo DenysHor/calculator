@@ -190,7 +190,16 @@ body.dark-theme .heater-select input[type="number"] {
     color: #fff;
     border-color: #777;
 }
-
+input[type="text"],
+input[type="number"] {
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
 body.dark-theme .heater-select button {
     background-color: #B05403;
     color: white;
