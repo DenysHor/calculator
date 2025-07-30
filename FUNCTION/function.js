@@ -416,7 +416,7 @@ function calculateHeatLoss() {
 
     const inputs = {
         buildingType: document.getElementById("buildingType").value,
-        outsideTemp: parseFloat(document.getElementById("outsideTemp").value),
+        outsideTemp: parseFloat(document.getElementById("outsideTemp").value.replace(",", ".")),
         insideTemp: parseFloat(document.getElementById("insideTemp").value),
         roomArea: parseFloat(document.getElementById("roomArea").value),
         ceilingHeight: parseFloat(document.getElementById("ceilingHeight").value) || 2.7,
